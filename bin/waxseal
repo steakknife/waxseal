@@ -1,0 +1,16 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+
+def gemspec_file
+  result = Dir['*.gemspec']
+  fail '.gemspec missing' unless result.size > 0
+  fail 'multiple .gemspec, cant decide' unless result.size == 1
+  result[0]
+end
+
+def gemspec
+  Gem::Specification.load(gemspec_file)
+end
+
+p gemspec.normalize
+
