@@ -45,7 +45,6 @@ def email
   return result
 end
 
-
 def check_key(confirm = true)
   keys_path = File.expand_path(PERSONAL_KEY_PATH)
   FileUtils.mkdir_p(keys_path)
@@ -86,8 +85,6 @@ def make_signable(confirm = true)
   
   puts "updated #{gemspec_file} for signing"
 end
-
-
 
 def run(confirm, commit)
   check_key(confirm)
