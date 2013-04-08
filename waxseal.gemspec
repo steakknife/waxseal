@@ -13,7 +13,8 @@ Gem::Specification.new do |s|
 EOF
   s.executables = s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.post_install_message = <<-EOF
-  : post-install notes :
+
+  :: waxseal | post-install notes ::
 
   In this order...
 
@@ -28,6 +29,8 @@ EOF
   And then just cd to any of your gem's unsigned source directory and run `waxseal`
 
   Thanks for installing waxseal. 
+
+
 EOF
 
   s.files = Dir['{lib,vendor}/**/*'] + ['LICENSE', 'README.md']
