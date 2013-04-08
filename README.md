@@ -2,7 +2,8 @@
 
 ## Install
 
-    [sudo] gem install waxseal
+    [sudo] gem cert --add <(curl -L https://gist.github.com/steakknife/5333881/raw/gem-public_cert.pem) # adds my cert (do once)
+    [sudo] gem install waxseal -P HighSecurity
 
 ## Usage
 
