@@ -12,6 +12,23 @@ Gem::Specification.new do |s|
   Adds certificate stuff to your gems.
 EOF
   s.executables = s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
+  s.post_install_message = <<-EOF
+  : post-install notes :
+
+  In this order...
+
+     - If rbenv is installed, run:
+
+         rbenv rehash
+
+     - If ZSH is installed, run:
+
+         rehash
+
+  And then just cd to any of your gem's unsigned source directory and run `waxseal`
+
+  Thanks for installing waxseal. 
+EOF
 
   s.files = Dir['{lib,vendor}/**/*'] + ['LICENSE', 'README.md']
   s.test_files = Dir['test/**/*']
