@@ -1,16 +1,133 @@
 #!/usr/bin/env ruby
+require 'fileutils'
+require 'optparse'
 require 'rubygems'
+require 'shellwords'
+
+PERSONAL_KEY_PATH    = '~/.keys'
+
+PRIVATE_KEY_FILENAME = 'gem-private_key.pem'
+PUBLIC_CERT_FILENAME = 'gem-public_cert.pem'
+
+def die(message)
+  $stderr.puts("\n !   #{message}\n\n")
+  exit 1
+end
+
+trap('INT') {
+  $stderr.puts
+  die 'User interrupted'  
+}
 
 def gemspec_file
   result = Dir['*.gemspec']
-  fail '.gemspec missing' unless result.size > 0
-  fail 'multiple .gemspec, cant decide' unless result.size == 1
-  result[0]
+  fail '.gemspec missing'                      unless result.size > 0
+  fail 'multiple *.gemspec files, cant decide' unless result.size == 1
+  return result[0]
 end
 
 def gemspec
-  Gem::Specification.load(gemspec_file)
+  return @@gemspec ||= Gem::Specification.load(gemspec_file)
 end
 
-p gemspec.normalize
+def signable?
+  return !!gemspec.cert_chain && !!gemspec.signing_key
+end
 
+def ask(prompt)
+  print prompt
+  return gets.chop
+end
+
+def email
+  result = ENV['WAXSEAL_GEM_SIGNING_EMAIL'] || ask('Enter the email address (yours, perhaps) to be used for signing ruby gems > ')
+  fail 'Email address cannot be blank' unless result.is_a?(String) && result.length > 0
+  return result
+end
+
+
+def check_key(confirm = true)
+  keys_path = File.expand_path(PERSONAL_KEY_PATH)
+  FileUtils.mkdir_p(keys_path)
+  public_cert = ''
+  FileUtils.cd(keys_path) do
+    unless File.exist?(PRIVATE_KEY_FILENAME) && File.exist?(PUBLIC_CERT_FILENAME)
+      if confirm
+        unless ask("Generate #{PRIVATE_KEY_FILENAME} and #{PUBLIC_CERT_FILENAME}? [Yn]: ").downcase == 'y' 
+          fail 'User aborted' 
+        end
+      end
+      unless system "gem cert --build #{Shellwords.escape(email)} | sed \"s%gem.*\.pem$%`pwd`/&%g\""
+        fail 'Could not create certificates for gem signing' 
+      end
+    end
+    FileUtils.chmod(0600, PRIVATE_KEY_FILENAME)
+    FileUtils.chmod(0644, PUBLIC_CERT_FILENAME)
+    unless system "gem cert --add #{PUBLIC_CERT_FILENAME}"
+      fail 'Could not add certificate to trusted gem cert list' 
+    end
+    public_cert = File.join(FileUtils.pwd, PUBLIC_CERT_FILENAME)
+  end
+  unless File.exist?(PUBLIC_CERT_FILENAME)
+    FileUtils.cp(public_cert, PUBLIC_CERT_FILENAME)
+  end
+end
+
+def make_signable(confirm = true)
+  return if signable?
+  if confirm
+    unless ask("Setup #{gemspec_file} for signing? [Yn]: ") == 'y'
+      fail 'User aborted'
+    end
+  end
+  File.open(gemspec_file, 'a') do |f|
+    f.puts(".tap {|gem| gem.signing_key = File.expand_path(File.join('#{PERSONAL_KEY_PATH}', '#{PRIVATE_KEY_FILENAME}')) ; gem.cert_chain = ['#{PUBLIC_CERT_FILENAME}']} # pressed firmly by waxseal")
+  end
+  
+  puts "updated #{gemspec_file} for signing"
+end
+
+
+
+def run(confirm, commit)
+  check_key(confirm)
+  make_signable(confirm)
+  if commit
+    unless system "git add *.gemspec #{PUBLIC_CERT_FILENAME} && git commit -m 'enable gem signing: stamped with waxseal'"
+      fail "Could not commit changes made by waxseal, please save changed *.gemspec and #{PUBLIC_CERT_FILENAME}"
+    end
+  end
+end
+
+def set_email(email_address)
+  ENV['WAXSEAL_GEM_SIGNING_EMAIL'] = email_address
+  unless ENV['WAXSEAL_GEM_SIGNING_EMAIL'] && ENV['WAXSEAL_GEM_SIGNING_EMAIL'].length 
+    fail 'missing email address' 
+  end
+end
+
+if ENV['WAXSEAL_NO_CONFIRM'] == '1'
+  $confirm = false 
+else 
+  $confirm = true 
+end
+
+if ENV['WAXSEAL_AUTO_COMMIT'] == '1'
+  $commit = true
+else
+  $commit = false
+end
+
+OptionParser.new do |o|
+  o.on('-c', '--commit',      "Make a new git commit automatically. can also set WAXSEAL_AUTO_COMMIT=1")      { $commit = true }
+  o.on('-e', '--email EMAIL', "Email address to use for signing, overrides optional variable WAXSEAL_GEM_SIGNING_EMAIL") { |email| set_email(email) }
+  o.on('-f', '--force',       "No prompts.  Can also be set by WAXSEAL_NO_CONFIRM=1")       { $confirm = false }
+  o.on('-h', '--help')        { $stderr.puts o ; exit 1 }
+  o.parse!
+end
+
+begin
+  run($confirm, $commit)
+rescue RuntimeError => e
+  die e.message
+end

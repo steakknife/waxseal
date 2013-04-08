@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.description = <<-EOF
   Adds certificate stuff to your gems.
 EOF
-  s.bindir = 'bin'
+  s.executables = s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
 
   s.files = Dir['{lib,vendor}/**/*'] + ['LICENSE', 'README.md']
   s.test_files = Dir['test/**/*']
