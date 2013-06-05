@@ -1,5 +1,7 @@
 # waxseal
 
+![seal](http://www.maleschek.com/assets/images/initialen-siegel.jpg)
+
 ## Install
 
     [sudo] gem cert --add <(curl -L https://gist.github.com/steakknife/5333881/raw/gem-public_cert.pem) # adds my cert (do once)
@@ -16,3 +18,5 @@
 ## License
 
 MIT
+
+(Try not to get wax all over, it's hard to clean.)
