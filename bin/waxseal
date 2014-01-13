@@ -60,7 +60,7 @@ def check_key(confirm = true)
         fail 'Could not create certificates for gem signing' 
       end
     end
-    FileUtils.chmod(0600, PRIVATE_KEY_FILENAME)
+    FileUtils.chmod(0400, PRIVATE_KEY_FILENAME)
     FileUtils.chmod(0644, PUBLIC_CERT_FILENAME)
     unless system "gem cert --add #{PUBLIC_CERT_FILENAME}"
       fail 'Could not add certificate to trusted gem cert list' 
