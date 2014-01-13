@@ -90,7 +90,9 @@ def run(confirm, commit)
   check_key(confirm)
   make_signable(confirm)
   if commit
-    unless system "git add *.gemspec #{PUBLIC_CERT_FILENAME} && git commit -m 'enable gem signing: stamped with waxseal'"
+    args = []
+    args << '--signoff' << '--gpg-sign' if $gpg_sign
+    unless system "git add *.gemspec #{PUBLIC_CERT_FILENAME} && git commit #{args.join(' ')} -m 'enable gem signing: stamped with waxseal'"
       fail "Could not commit changes made by waxseal, please save changed *.gemspec and #{PUBLIC_CERT_FILENAME}"
     end
   end
@@ -117,6 +119,7 @@ end
 
 OptionParser.new do |o|
   o.on('-c', '--commit',      "Make a new git commit automatically. can also set WAXSEAL_AUTO_COMMIT=1")      { $commit = true }
+  o.on('-s', '--sign-also-with-gpg' "Sign commit using ") { $sign = true }
   o.on('-e', '--email EMAIL', "Email address to use for signing, overrides optional variable WAXSEAL_GEM_SIGNING_EMAIL") { |email| set_email(email) }
   o.on('-f', '--force',       "No prompts.  Can also be set by WAXSEAL_NO_CONFIRM=1")       { $confirm = false }
   o.on('-h', '--help')        { $stderr.puts o ; exit 1 }
