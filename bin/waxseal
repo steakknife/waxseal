@@ -105,21 +105,13 @@ def set_email(email_address)
   end
 end
 
-if ENV['WAXSEAL_NO_CONFIRM'] == '1'
-  $confirm = false 
-else 
-  $confirm = true 
-end
-
-if ENV['WAXSEAL_AUTO_COMMIT'] == '1'
-  $commit = true
-else
-  $commit = false
-end
+$confirm = ENV['WAXSEAL_NO_CONFIRM'] == '1'
+ $commit = ENV['WAXSEAL_AUTO_COMMIT'] == '1'
+   $sign = ENV['WAXSEAL_DONT_SIGN_AUTO_COMMIT'] != '1'
 
 OptionParser.new do |o|
   o.on('-c', '--commit',      "Make a new git commit automatically. can also set WAXSEAL_AUTO_COMMIT=1")      { $commit = true }
-  o.on('-s', '--sign-also-with-gpg' "Sign commit using ") { $sign = true }
+  o.on('-d', '--dont-sign-commit', "Sign commit using Can also be set by WAXSEAL_DONT_SIGN_AUTO_COMMIT=1") { $sign = false }
   o.on('-e', '--email EMAIL', "Email address to use for signing, overrides optional variable WAXSEAL_GEM_SIGNING_EMAIL") { |email| set_email(email) }
   o.on('-f', '--force',       "No prompts.  Can also be set by WAXSEAL_NO_CONFIRM=1")       { $confirm = false }
   o.on('-h', '--help')        { $stderr.puts o ; exit 1 }
