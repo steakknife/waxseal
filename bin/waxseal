@@ -91,7 +91,7 @@ def run(confirm, commit)
   make_signable(confirm)
   if commit
     args = []
-    args << '--signoff' << '--gpg-sign' if $gpg_sign
+    args << '--signoff' << '--gpg-sign' if $sign
     unless system "git add *.gemspec #{PUBLIC_CERT_FILENAME} && git commit #{args.join(' ')} -m 'enable gem signing: stamped with waxseal'"
       fail "Could not commit changes made by waxseal, please save changed *.gemspec and #{PUBLIC_CERT_FILENAME}"
     end
