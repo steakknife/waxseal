@@ -27,7 +27,7 @@ def gemspec_file
 end
 
 def gemspec
-  return @@gemspec ||= Gem::Specification.load(gemspec_file)
+  return $gemspec ||= Gem::Specification.load(gemspec_file)
 end
 
 def signable?
