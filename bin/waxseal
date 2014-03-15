@@ -80,7 +80,7 @@ def make_signable(confirm = true)
     end
   end
   File.open(gemspec_file, 'a') do |f|
-    f.puts(".tap {|gem| gem.signing_key = File.expand_path(File.join('#{PERSONAL_KEY_PATH}', '#{PRIVATE_KEY_FILENAME}')) ; gem.cert_chain = ['#{PUBLIC_CERT_FILENAME}']} # pressed firmly by waxseal")
+    f.puts(".tap {|gem| pk = File.expand_path(File.join('#{PERSONAL_KEY_PATH}', '#{PRIVATE_KEY_FILENAME}')); gem.signing_key = pk if File.exist? pk; gem.cert_chain = ['#{PUBLIC_CERT_FILENAME}']} # pressed firmly by waxseal")
   end
   
   puts "updated #{gemspec_file} for signing"
