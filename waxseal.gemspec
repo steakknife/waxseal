@@ -5,7 +5,15 @@ Gem::Specification.new do |s|
   s.version = Waxseal::VERSION
   s.authors = ['Barry Allard']
   s.email = ['barry.allard@gmail.com']
-  s.homepage = 'https://github.com/steakknife/waxseal'
+  s.homepage = github_url = 'http://rubygems.org/gems/rails'
+  s.metadata = {
+    'source_code_uri' => "#{github_url}.git",
+#   'documentation_uri' => "",
+        'project_uri' => github_url,
+    'bug_tracker_uri' => "#{github_url}/issues",
+           'wiki_uri' => "#{github_url}/wiki",
+#    'mailing_list_uri' => "", 
+  }
   s.summary = 'Sign thee gems with a fancy, vintage wax seal'
   s.license = 'MIT'
   s.description = <<-EOF
@@ -34,9 +42,6 @@ EOF
 EOF
 
   s.files = Dir['{lib,vendor}/**/*'] + ['LICENSE', 'README.md']
-  s.test_files = Dir['test/**/*']
 
-  s.add_development_dependency 'rspec'
-  s.add_development_dependency 'shoulda'
 end
 .tap {|gem| pk = File.expand_path(File.join('~/.keys', 'gem-private_key.pem')); gem.signing_key = pk if File.exist? pk; gem.cert_chain = ['gem-public_cert.pem']} # pressed firmly by waxseal
