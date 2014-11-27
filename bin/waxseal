@@ -56,7 +56,10 @@ def check_key(confirm = true)
           fail 'User aborted' 
         end
       end
-      unless system "gem cert --build #{Shellwords.escape(email)} | sed \"s%gem.*\.pem$%`pwd`/&%g\""
+      unless system "openssl genrsa -out #{PRIVATE_KEY_FILENAME} 4096"
+        fail "Could not generate a new RSA (unencrypted) private key"
+      end
+      unless system "gem cert --build #{Shellwords.escape(email)} --private-key  #{PRIVATE_KEY_FILENAME} | sed \"s%gem.*\.pem$%`pwd`/&%g\""
         fail 'Could not create certificates for gem signing' 
       end
     end
