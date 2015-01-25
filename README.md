@@ -22,9 +22,9 @@ You could do all this yourself, like anything, but this makes it much more convi
 
 The best move for the communinity would be to encourage the requirement of RubyGems reject new gems that do not verify and to set security policy to at least `MediumSecurity` and then `HighSecurity`.  This means it's important to get all gems signed, even ones that are "abandoned."
 
-Until then, there won't be enough political capital to convince the "there's no problem" pepole to change until there's another avoidable major security gaffe, like hacked gems running some malicious code on someone's app servers.
+Until then, there won't be enough political capital to convince the complacent *"where's the problem?"* people to change until there's another avoidable major security gaffe, like hacked gems running some malicious code on someone's app servers. 
 
-The other thing you can do to deter malicious code getting to production is run a *private* gem repo that compares hashes of gems downloaded via multiple links.  This won't prevent an attack of malicious code of hacking RubyGems between developer upload channel, storage on their disks and user download channel, which only end-to-end cryptographic signatures provides.
+The other thing you can do to deter malicious code getting to production is run a *private gem repo* that compares hashes of gems downloaded via multiple network links, and use that instead of hammering rubygem servers directly.  This won't prevent very many attacks hacking RubyGems between developer upload channel, storage on their disks and user download channel, which only end-to-end cryptographic signatures provides... It's a terrible workaound, but it prevents breakage including developers destroying their work.
 
 ## What else you can do to increase security (and cause more things to fix)
 
