@@ -43,13 +43,13 @@ gem: -P MediumSecurity # append this if gem: already exists
 
 It's possible to pass the security policy to bundler via `bundler ... --trust-policy {{Level}}Policy`
 
+Could just wrap bundler with a shell alias or another script.
+
 
 ## Read more
 [http://guides.rubygems.org/security/](http://guides.rubygems.org/security/)
 
 [https://www.ruby-doc.org/stdlib-2.2.0/libdoc/rubygems/rdoc/Gem/Security.html](https://www.ruby-doc.org/stdlib-2.2.0/libdoc/rubygems/rdoc/Gem/Security.html)
-
-Could just wrap bundler with a shell alias or another script.
 
 ## Install
 
